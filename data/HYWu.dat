@@ -1,0 +1,56 @@
+14
+Hsiang-Yun_Wu		1.00	0
+Masatoshi_Arikawa	0.60	1
+Issei_Fujishiro		0.55	2
+Daichi_Hirono		0.60	3
+Chun-Cheng_Lin		0.85	4
+Kazuo_Misue		0.55	5
+Kazuyo_Mizuno		0.60	6
+Koto_Nohno		0.55	7
+Sheung-Hung_Poon	0.55	8
+Seow_Hui_Saw		0.55	9
+Shigeo_Takahashi	0.95	10
+Kazuho_Watanabe		0.55	11
+Hsu-Chun_Yen		0.85	12
+Gao_Yi			0.55	13
+40
+0	1
+0	2
+0	3
+0	4
+0	5
+0	6
+0	7
+0	8
+0	9
+0	10
+0	11
+0	12
+0	13
+1	3
+1	4
+1	10
+1	12
+2	7
+2	10
+2	11
+3	4
+3	10
+3	12
+4	8
+4	9
+4	10
+4	12
+5	6
+5	10
+5	13
+6	10
+6	13
+7	10
+7	11
+8	10
+8	12
+9	10
+10	11
+10	12
+10	13
