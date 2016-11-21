@@ -1,5 +1,6 @@
 #include "Common.h"
 #include "Graph.h"
+#include "Net.h"
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/bc_clustering.hpp>
@@ -79,7 +80,7 @@ void edgeCentrality( Graph & ref )
     typedef boost::property_map< GraphBC, boost::vertex_index_t >::type VertexIndexMapBC;
     VertexIndexMapBC v_index = get( boost::vertex_index, gBC );
     std::vector< double > v_centrality_vec( boost::num_vertices(gBC), 0.0 );
-    // Create the external property map
+     // Create the external property map
     boost::iterator_property_map< std::vector< double >::iterator, VertexIndexMapBC >
 	v_centrality_map( v_centrality_vec.begin(), v_index );
  
@@ -99,9 +100,16 @@ void edgeCentrality( Graph & ref )
     BGL_FORALL_EDGES(edgeBC, gBC, GraphBC ) {
 	std::cout << edgeBC << ": " <<e_centrality_map[edgeBC] << std::endl;
     }
- 
-
-
+    //update 11/21
+    BGL_FORALL_VERTICES( vertex, gBC, GraphBC )
+    {
+        double BetCentrality = 0;
+        int g = boost::num_vertices(gBC);
+        BetCentrality = (2 * v_centrality_map[vertex]) / ( (g - 1)*(g - 2) );
+        //setBetCentrality(BetCentrality);
+        cerr << vertex << ": " << v_centrality_map[vertex] << " " << BetCentrality << endl;
+     }
+    
     double maxEdgeCentrality = 0.0;
     BGL_FORALL_EDGES( edBC, gBC, GraphBC ) {
 	if ( e_centrality_map[ edBC ] > maxEdgeCentrality ) {
@@ -134,6 +142,9 @@ void minimumSpanningTree( Graph & g )
     // VertexActiveMap     vertexActive =  get( vertex_myactive, g );
     EdgeFlagMap     flagMap =   get( edge_myflag, g );
     VertexForceMap  vertexForce = get( vertex_myforce, g );
+    Net net;
+    net.setFinishFlag();
+    cout << "min " << net.getFinishFlag() << endl;
     // EdgeTopologyMap topologyMap = get( edge_mytopology, g );
     // pair< EdgeIterator, EdgeIterator > ep;
 
@@ -262,6 +273,7 @@ void edgeCentrality( Graph & g )
     // Update the weight
     //#ifdef DEBUG
     cout << "\nAfter" << endl;
+    
     print_graph( gBC );
     BGL_FORALL_VERTICES( vertex, gBC, GraphBC )
     {
