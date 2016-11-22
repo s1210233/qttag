@@ -20,6 +20,7 @@
 #include "Widget.h"
 #include "Window.h"
 #include "Net.h"
+//#include "Graph.h"
 
 //------------------------------------------------------------------------------
 //	Defining Macros
@@ -126,6 +127,7 @@ void Widget::_prism( Coord2 & coord, double weight, double aspect, double up )
 //  Outputs
 //	none
 //
+
 void Widget::_draw( GLenum mode )           /*********************************************
                                                   memo   glColor3f RGB -> (0~255)/255
                                              *********************************************/
@@ -143,10 +145,9 @@ void Widget::_draw( GLenum mode )           /***********************************
     VertexRatioMap	vertexRatio	= get( vertex_myratio, g );
     EdgeFlagMap		edgeFlag	= get( edge_myflag, g );
     EdgeWeightMap	edgeWeight	= get( edge_weight, g );
-
     Net net;
+
     // VertexShiftMap	vertexShift	= get( vertex_myshift, g );
-    
     // for Picking
     glInitNames();
     glPushName( NO_INDEX );
@@ -165,7 +166,8 @@ void Widget::_draw( GLenum mode )           /***********************************
     glLineWidth( 2.0 );
     //glColor3f( 0.0, 0.0, 0.0 );
     glColor3d( 0.5, 0.5, 0.5 );        //---------------add20151007
- 
+    
+    //cout << "widget  "<< net.getFinishFlag() << endl;
     //draw graph edges
     BGL_FORALL_EDGES( ed, g, Graph ) {
         VertexDescriptor vdS = source( ed, g );
@@ -189,21 +191,22 @@ void Widget::_draw( GLenum mode )           /***********************************
 	glEnd();
     }
     
-    cout << "widget  "<<net.getFinishFlag() << endl;
 
     // for disabling antialiasing
     glDisable( GL_LINE_SMOOTH );
     glDisable( GL_BLEND );
     
+    //cout << "bet " << getBetCentrality() << endl;
     // draw graph nodes
     double radius = 5.0;
     glEnable( GL_POINT_SMOOTH );
     BGL_FORALL_VERTICES( vd, g, Graph ) {
+        
         // cerr << HERE << "vertexCoord[" << vd << "]=" << vertexCoord[ vd ];
         glLoadName( vertexID[ vd ] );
         curcoord = vertexCoord[ vd ];
 	//cout << "curcoord=" << curcoord << endl;
-
+      //  cout << " bet " << BetCentrality << endl;
         if ( vertexSwitch[ vd ] ) radius = 8.0;
         else radius = 5.0;
 

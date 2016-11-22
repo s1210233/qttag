@@ -6,6 +6,8 @@
 #include <boost/graph/bc_clustering.hpp>
 #include <boost/graph/kruskal_min_spanning_tree.hpp>
 
+//static double BetCentrality;
+
 void edgeCentrality( Graph & ref )
 {
     typedef adjacency_list< 
@@ -107,7 +109,7 @@ void edgeCentrality( Graph & ref )
         int g = boost::num_vertices(gBC);
         BetCentrality = (2 * v_centrality_map[vertex]) / ( (g - 1)*(g - 2) );
         //setBetCentrality(BetCentrality);
-        cerr << vertex << ": " << v_centrality_map[vertex] << " " << BetCentrality << endl;
+        cerr << vertex << ": " << v_centrality_map[vertex] << "  BetCen :" << BetCentrality << endl;
      }
     
     double maxEdgeCentrality = 0.0;

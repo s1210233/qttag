@@ -183,6 +183,11 @@ typedef property_map< Graph, edge_index_t >::type		EdgeIndexMap;
 void edgeCentrality	( Graph & g );
 void minimumSpanningTree( Graph & g );
 
+// double betw;
+// void setBetCentrality( double b ){double betw = b; };
+    // //update 11/21
+    // double getBetCentrality(void){ return bet;};
+
 
 #endif  // _Graph_H
 

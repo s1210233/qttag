@@ -72,6 +72,7 @@ using namespace cv;
 //------------------------------------------------------------------------------
 
 
+
 class Net : public Graph {
 
   private:
@@ -112,8 +113,6 @@ class Net : public Graph {
     unsigned int	_nextID;
 
     bool		_labelFlag;	
-    //update 11/17
-    bool        _finishFlag;
 
     bool		_clutterBit;
     double		_conflictArea;
@@ -149,7 +148,8 @@ class Net : public Graph {
 
 
   public:
-
+        //update 11/17
+    bool        _finishFlag;
 //------------------------------------------------------------------------------
 //	コンストラクタ
 //	Constructors
@@ -256,6 +256,8 @@ class Net : public Graph {
 
     //update 11/17
     bool getFinishFlag( void )  { return _finishFlag;}
+    //update 11/18
+    void setFinishFlag( void )  { _finishFlag = true;}
 //------------------------------------------------------------------------------
 //	Annotateion labels
 //------------------------------------------------------------------------------
@@ -362,8 +364,6 @@ inline int arrange( const Net * a, const Net * b ) {
     return compare( a, b );
 }				// ソートのためのふたつのベクトルの比較
 #endif	// SKIP
-
-
 
 #endif // _Net_H
 

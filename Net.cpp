@@ -76,7 +76,7 @@ void Net::_changeHSVToColor( double hue, double saturation, double value, unsign
                 r= up; g= min; b= max; break; // blue -> magenta
             case 5:
                 r= max; g= min; b=down; break; // magenta -> red
-        }
+        }   
     }
     
     rgb[ 0 ] = ( unsigned int )MAX2( 0, MIN2( 255, r ) );
@@ -131,6 +131,7 @@ void Net::_init( void )
     _spaceBit	= false;
     //update 11/17
     _finishFlag = false;
+    
 }
 
 
@@ -239,7 +240,7 @@ void Net::_load( const char * filename )
 	istr.clear();
 	istr.str( buf );
 	istr >> name >> weight >> x >> y;
-	cerr << HERE << "Vertex name = " << name.c_str() << " weight = " << weight << endl;
+	//cerr << HERE << "Vertex name = " << name.c_str() << " weight = " << weight << endl;
 	VertexDescriptor vd = add_vertex( graph );
 	vertexID[ vd ] = vertexIndex[ vd ] = i;
 	vertexSwitch[ vd ] = false;
@@ -282,7 +283,7 @@ void Net::_load( const char * filename )
 	edgeID[ ed ] = edgeIndex[ ed ] = i;
 	edgeFlag[ ed ] = false;
     }
-    //update 11/17
+    //update 11/17 
     _finishFlag = false;
 
     ifs.close();
@@ -474,7 +475,7 @@ void Net::_force( void )
             }
         }
     }
-    cout << "net  "<<_finishFlag << endl;
+    //cout << "net  "<< _finishFlag << endl;
 }
 
 
@@ -1050,6 +1051,7 @@ void Net::calcMST( void )
     minimumSpanningTree( *this );
     //update 11/17
     _finishFlag = true;
+   // cout << "test " << _finishFlag << endl;    
 }
 
 
