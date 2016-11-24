@@ -129,8 +129,6 @@ void Net::_init( void )
     _gp = false;
     _smoothingset = false;
     _spaceBit	= false;
-    //update 11/17
-    _finishFlag = false;
     
 }
 
@@ -283,8 +281,6 @@ void Net::_load( const char * filename )
 	edgeID[ ed ] = edgeIndex[ ed ] = i;
 	edgeFlag[ ed ] = false;
     }
-    //update 11/17 
-    _finishFlag = false;
 
     ifs.close();
 
@@ -438,6 +434,7 @@ void Net::_force( void )
     VertexForceMap	vertexForce	= get( vertex_myforce, g );
 
     EdgeFlagMap     edgeFlag    = get( edge_myflag, g );
+    EdgeFflagMap    edgeFflag   = get( edge_myfflag, g );
 
     BGL_FORALL_VERTICES( vdi, g, Graph ) {
         Coord2 shift( 0.0, 0.0 );
@@ -457,16 +454,16 @@ void Net::_force( void )
                 
                 // pair< EdgeDescriptor, bool > isConnected = edge( vdi, vdj );
                 EdgeDescriptor	ed;
-                bool		is;
+                bool		is;   
                 tie( ed, is ) = edge( vdi, vdj, g );
                 if ( is ) {
                     // Drawing force by the spring
                     //update 11/17
-                        if(edgeFlag[ ed ]== false && _finishFlag == false){
+                        if(edgeFlag[ ed ]== false && edgeFflag[ ed ] == false){
                             vertexForce[ vdi ] += ka * ( dist - L ) * unit;
-                        }else if(edgeFlag[ ed ]== true && _finishFlag == true){
+                        }else if(edgeFlag[ ed ]== true && edgeFflag[ ed ] == true){
                             vertexForce[ vdi ] += ka * ( dist - (L*0.3) ) * unit;
-                        }else if(edgeFlag[ ed ]== false && _finishFlag == true){
+                        }else if(edgeFlag[ ed ]== false && edgeFflag[ ed ] == true){
                             vertexForce[ vdi ] += ka * ( dist - (L*3) ) * unit;
                         }
                 }
@@ -1049,8 +1046,7 @@ void Net::calcEdgeCentrality( void )
 void Net::calcMST( void )
 {
     minimumSpanningTree( *this );
-    //update 11/17
-    _finishFlag = true;
+
    // cout << "test " << _finishFlag << endl;    
 }
 

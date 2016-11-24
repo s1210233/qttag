@@ -143,9 +143,14 @@ void Widget::_draw( GLenum mode )           /***********************************
     VertexHeightMap	vertexHeight	= get( vertex_myheight, g );
     VertexOverlapMap	vertexOverlap	= get( vertex_myoverlap, g );
     VertexRatioMap	vertexRatio	= get( vertex_myratio, g );
+    //update 11/24
+    VertexCentMap   vertexCent  = get( vertex_mycent, g );
+    VertexFlagMap   vertexFlag  = get( vertex_myflag, g );
+    EdgeFflagMap    edgeFflag   = get( edge_myfflag, g);
+
     EdgeFlagMap		edgeFlag	= get( edge_myflag, g );
     EdgeWeightMap	edgeWeight	= get( edge_weight, g );
-    Net net;
+    
 
     // VertexShiftMap	vertexShift	= get( vertex_myshift, g );
     // for Picking
@@ -177,13 +182,21 @@ void Widget::_draw( GLenum mode )           /***********************************
     	if ( edgeFlag[ ed ] == true) {
     	    glLineWidth( 4.0 );
     	    glColor3d( 1.0, 0.0, 0.0 );
-    	}else if ( edgeFlag[ ed ] == false && net.getFinishFlag() == false){
+    	}
+        else{
+             if( edgeFflag[ ed ] == false ){
     	       glLineWidth( 2.0 );
     	       glColor3d( 0.5, 0.5, 0.5);
-        }else if( edgeFlag[ ed ] == false && net.getFinishFlag() == true){
+            }
+            else{
                 glLineWidth( 2.0 );
                 glColor3d( 1.0, 1.0, 1.0);
-       }
+            }
+        }   
+    // else if( edgeFlag[ ed ] == false && edgeFflag[ ed ] == true ){
+    //             glLineWidth( 2.0 );
+    //             //glColor3d( 1.0, 1.0, 1.0);
+    //    }
 
 	glBegin( GL_LINES );
 	glVertex2dv( vertexCoord[ vdS ].element() );
@@ -195,8 +208,7 @@ void Widget::_draw( GLenum mode )           /***********************************
     // for disabling antialiasing
     glDisable( GL_LINE_SMOOTH );
     glDisable( GL_BLEND );
-    
-    //cout << "bet " << getBetCentrality() << endl;
+
     // draw graph nodes
     double radius = 5.0;
     glEnable( GL_POINT_SMOOTH );
@@ -237,6 +249,15 @@ void Widget::_draw( GLenum mode )           /***********************************
 	    glVertex2dv( curcoord.element() );  //node position
 	    glEnd();
 	}
+    if(vertexFlag[vd]){
+        if(vertexCent[vd] == 1) glColor3f(1.0 ,0.0 , 0.0);
+        else if(vertexCent[vd] >= 0.5) glColor3f(0.0, 0.0, 1.0);
+        else if(vertexCent[vd] == 0) glColor3f(0.0 , 1.0 , 0.0);
+        else glColor3f(0.5, 0.5, 0.5);
+        glBegin( GL_POINTS );
+        glVertex2dv( curcoord.element() );  //node position
+        glEnd();
+    }
 
 	glLoadName( NO_INDEX );
         

@@ -6,7 +6,6 @@
 #include <boost/graph/bc_clustering.hpp>
 #include <boost/graph/kruskal_min_spanning_tree.hpp>
 
-//static double BetCentrality;
 
 void edgeCentrality( Graph & ref )
 {
@@ -22,6 +21,9 @@ void edgeCentrality( Graph & ref )
 
     VertexIndexMap	vertexIndex	= get( vertex_index, ref );
     EdgeWeightMap       edgeWeight	= get( edge_weight, ref );
+    //update 11/24 
+    VertexCentMap vertexCent = get(vertex_mycent, ref);
+    VertexFlagMap vertexFlag = get(vertex_myflag, ref);
 
     vector< VertexDescriptor >		BCtoGVertexVector;
     vector< EdgeDescriptor >		BCtoGEdgeVector;
@@ -29,6 +31,9 @@ void edgeCentrality( Graph & ref )
 
     unsigned int	numV = 0;
     unsigned int	numE = 0;
+    //update
+    double cent;
+
 
     // copy the graph
     numV = 0;
@@ -68,8 +73,8 @@ void edgeCentrality( Graph & ref )
     // -> Create and set it explicitly
     int i = 0;
     BGL_FORALL_EDGES( edgeBC, gBC, GraphBC ) {
-	my_e_index.insert( std::pair< EdgeBC, int >( edgeBC, i ) );
-	++i;
+    	my_e_index.insert( std::pair< EdgeBC, int >( edgeBC, i ) );
+    	++i;
     }
  
     // Define EdgeCentralityMap
@@ -78,7 +83,7 @@ void edgeCentrality( Graph & ref )
     boost::iterator_property_map< std::vector< double >::iterator, EdgeIndexMap >
 	e_centrality_map( e_centrality_vec.begin(), e_index );
  
-    // Define VertexCentralityMap
+    // Define CentralityMap
     typedef boost::property_map< GraphBC, boost::vertex_index_t >::type VertexIndexMapBC;
     VertexIndexMapBC v_index = get( boost::vertex_index, gBC );
     std::vector< double > v_centrality_vec( boost::num_vertices(gBC), 0.0 );
@@ -89,7 +94,7 @@ void edgeCentrality( Graph & ref )
     std::cout << "Before" << std::endl;
  
     BGL_FORALL_EDGES(edgeBC, gBC, GraphBC) {
-	std::cout << edgeBC << ": " << e_centrality_map[edgeBC] << std::endl;
+	   std::cout << edgeBC << ": " << e_centrality_map[edgeBC] << std::endl;
     }
 
     // Calculate the vertex and edge centralites
@@ -100,16 +105,29 @@ void edgeCentrality( Graph & ref )
     std::cout << "\nAfter" << std::endl;
  
     BGL_FORALL_EDGES(edgeBC, gBC, GraphBC ) {
-	std::cout << edgeBC << ": " <<e_centrality_map[edgeBC] << std::endl;
+	   std::cout << edgeBC << ": " <<e_centrality_map[edgeBC] << std::endl;
     }
+
     //update 11/21
-    BGL_FORALL_VERTICES( vertex, gBC, GraphBC )
+    double maxVertexCentrality = 0.0;
+    typedef property_map< GraphBC, vertex_index_t >::type     VertexIndexMapBC;
+    VertexIndexMapBC  vertexIndexBC = get( vertex_index, gBC );
+    BGL_FORALL_VERTICES( vdBC, gBC, GraphBC ){
+        if( v_centrality_map[vdBC] > maxVertexCentrality ){
+            maxVertexCentrality = v_centrality_map[vdBC];
+        }
+    }
+
+    BGL_FORALL_VERTICES( vdBC, gBC, GraphBC )
     {
-        double BetCentrality = 0;
-        int g = boost::num_vertices(gBC);
-        BetCentrality = (2 * v_centrality_map[vertex]) / ( (g - 1)*(g - 2) );
+        //int g = boost::num_vertices(gBC);
+        unsigned int idBC = vertexIndexBC[vdBC];
+        VertexDescriptor vd = BCtoGVertexVector[idBC];
+        vertexCent[vd] = v_centrality_map[vdBC] / maxVertexCentrality;
+        vertexFlag[vd] = true;
+        //vertexCent[vd] = (2 * v_centrality_map[vdBC]) / ( (g - 1)*(g - 2) );
         //setBetCentrality(BetCentrality);
-        cerr << vertex << ": " << v_centrality_map[vertex] << "  BetCen :" << BetCentrality << endl;
+        cerr << vdBC << ": " << setw(9) << v_centrality_map[vdBC] << "  BetCen :" << vertexCent[vd] << "  " << vertexFlag[vd]<<  endl;
      }
     
     double maxEdgeCentrality = 0.0;
@@ -143,15 +161,15 @@ void minimumSpanningTree( Graph & g )
 {
     // VertexActiveMap     vertexActive =  get( vertex_myactive, g );
     EdgeFlagMap     flagMap =   get( edge_myflag, g );
+    EdgeFflagMap    fflagMap = get( edge_myfflag, g);
     VertexForceMap  vertexForce = get( vertex_myforce, g );
-    Net net;
-    net.setFinishFlag();
-    cout << "min " << net.getFinishFlag() << endl;
+    
     // EdgeTopologyMap topologyMap = get( edge_mytopology, g );
     // pair< EdgeIterator, EdgeIterator > ep;
 
     BGL_FORALL_EDGES( ed, g, Graph ) {
 	   flagMap[ ed ] = false;
+       fflagMap[ ed ] = true;
     }
     
 

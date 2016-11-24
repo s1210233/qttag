@@ -25,6 +25,10 @@ using namespace boost;
 //  Boost customization
 //------------------------------------------------------------------------------
 // Vertex attributes
+// Finish Flag
+enum vertex_myflag_t        { vertex_myflag };
+// Betweeness Centrality
+enum vertex_mycent_t        { vertex_mycent };        
 // Label
 enum vertex_mylabel_t		{ vertex_mylabel };
 // Switch
@@ -56,6 +60,8 @@ enum vertex_myoverlap_t		{ vertex_myoverlap };
 // ID
 enum vertex_myid_t		{ vertex_myid };
 
+// Finish Flag
+enum edge_myfflag_t     { edge_myfflag };
 // Label
 enum edge_mylabel_t		{ edge_mylabel };
 // Flag
@@ -65,6 +71,8 @@ enum edge_myid_t		{ edge_myid };
 
 namespace boost {
     // vertex properties
+    BOOST_INSTALL_PROPERTY( vertex, myflag );
+    BOOST_INSTALL_PROPERTY( vertex, mycent );
     BOOST_INSTALL_PROPERTY( vertex, mylabel );
     BOOST_INSTALL_PROPERTY( vertex, myswitch );
     BOOST_INSTALL_PROPERTY( vertex, mycoord );
@@ -81,6 +89,7 @@ namespace boost {
     BOOST_INSTALL_PROPERTY( vertex, myoverlap );
     BOOST_INSTALL_PROPERTY( vertex, myid );
     // edge properties
+    BOOST_INSTALL_PROPERTY( edge, myfflag );
     BOOST_INSTALL_PROPERTY( edge, mylabel );
     BOOST_INSTALL_PROPERTY( edge, myflag );
     BOOST_INSTALL_PROPERTY( edge, myid );
@@ -90,8 +99,12 @@ namespace boost {
 //------------------------------------------------------------------------------
 //	Customizing vertex properties
 //------------------------------------------------------------------------------
+//Vertex Finish Flag
+typedef property< vertex_myflag_t, bool >                   MyVFlag;
+// Vertex Betweeness Centrality
+typedef property< vertex_mycent_t, double, MyVFlag >        MyVCent;  
 // Vertex named ID 
-typedef property< vertex_mylabel_t, unsigned int >		MyVLabel;
+typedef property< vertex_mylabel_t, unsigned int, MyVCent >	MyVLabel;
 // Vertex annotation switch
 typedef property< vertex_myswitch_t, bool, MyVLabel >		MyVSwitch;
 // Vertex position
@@ -126,8 +139,10 @@ typedef property< vertex_index_t, unsigned int, MyVID >		MyVertexProperty;
 //------------------------------------------------------------------------------
 //	Customizing edge properties
 //------------------------------------------------------------------------------
+// Edge Finish Flag
+typedef property< edge_myfflag_t, bool >                MyEFflag;
 // Edge Label
-typedef property< edge_mylabel_t, unsigned int >		MyELabel;
+typedef property< edge_mylabel_t, unsigned int, MyEFflag>		MyELabel;
 // Edge Flag
 typedef property< edge_myflag_t, bool, MyELabel >		MyEFlag;
 // Edge ID
@@ -151,6 +166,8 @@ typedef graph_traits< Graph >::vertex_iterator			VertexIterator;
 typedef graph_traits< Graph >::edge_iterator			EdgeIterator;
 
 // Vertex property map
+typedef property_map< Graph, vertex_myflag_t >::type       VertexFlagMap;
+typedef property_map< Graph, vertex_mycent_t >::type       VertexCentMap;
 typedef property_map< Graph, vertex_mylabel_t >::type		VertexLabelMap;
 typedef property_map< Graph, vertex_myswitch_t >::type		VertexSwitchMap;
 typedef property_map< Graph, vertex_mycoord_t >::type		VertexCoordMap;
@@ -169,6 +186,7 @@ typedef property_map< Graph, vertex_myid_t >::type		VertexIDMap;
 typedef property_map< Graph, vertex_index_t >::type		VertexIndexMap;
 
 // Edge property map
+typedef property_map< Graph, edge_myfflag_t >::type     EdgeFflagMap;
 typedef property_map< Graph, edge_mylabel_t >::type		EdgeLabelMap;
 typedef property_map< Graph, edge_myflag_t >::type		EdgeFlagMap;
 typedef property_map< Graph, edge_myid_t >::type		EdgeIDMap;

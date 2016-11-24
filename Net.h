@@ -148,8 +148,7 @@ class Net : public Graph {
 
 
   public:
-        //update 11/17
-    bool        _finishFlag;
+
 //------------------------------------------------------------------------------
 //	コンストラクタ
 //	Constructors
@@ -254,10 +253,6 @@ class Net : public Graph {
     void clearSpaceBit( void )			{ _spaceBit = false; }
     const bool & spaceBit( void )	const	{ return _spaceBit; }
 
-    //update 11/17
-    bool getFinishFlag( void )  { return _finishFlag;}
-    //update 11/18
-    void setFinishFlag( void )  { _finishFlag = true;}
 //------------------------------------------------------------------------------
 //	Annotateion labels
 //------------------------------------------------------------------------------
