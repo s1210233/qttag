@@ -122,6 +122,12 @@ void Window::calcMST( void )
     _widget->repaint();
 }
 
+void Window::calcDivideComunity( void )
+{
+    _widget->net()->calcDivideComunity();
+    _widget->repaint();
+}
+
 //------------------------------------------------------------------------------
 //	Annotate menus
 void Window::allSet( void )
@@ -473,6 +479,11 @@ void Window::createActions( void )
     actMST->setShortcut( tr("Alt+M") );
     actMST->setStatusTip( tr("Compute minimum spanning tree") );
     connect( actMST, SIGNAL( triggered() ), this, SLOT( calcMST() ) );
+    // Analyze: Divide Comunity
+    actDivideComunity = new QAction( tr("Divide Comunity"), this );
+    actDivideComunity->setShortcut( tr("Alt+D") );
+    actDivideComunity->setStatusTip( tr("Compute DivideComunity") );
+    connect( actDivideComunity, SIGNAL( triggered() ), this, SLOT( calcDivideComunity() ) );
 
     // Annotate: allSet
     actSet		= new QAction( tr("All Set"), this );
@@ -599,6 +610,7 @@ void Window::createMenus( void )
     analyzeMenu = menuBar()->addMenu( tr("Analyze") );
     analyzeMenu->addAction( actEdgeCentrality );
     analyzeMenu->addAction( actMST );
+    analyzeMenu->addAction( actDivideComunity );
     // Annotate
     annotateMenu = menuBar()->addMenu( tr("Annotate") );
     annotateMenu->addAction( actSet );

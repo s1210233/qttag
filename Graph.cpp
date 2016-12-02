@@ -5,6 +5,7 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/bc_clustering.hpp>
 #include <boost/graph/kruskal_min_spanning_tree.hpp>
+#include <boost/graph/connected_components.hpp>
 
 
 void edgeCentrality( Graph & ref )
@@ -24,6 +25,7 @@ void edgeCentrality( Graph & ref )
     //update 11/24 
     VertexCentMap vertexCent = get(vertex_mycent, ref);
     VertexFlagMap vertexFlag = get(vertex_myflag, ref);
+    EdgeCentMap   edgeCent   = get(edge_mycent, ref);
 
     vector< VertexDescriptor >		BCtoGVertexVector;
     vector< EdgeDescriptor >		BCtoGEdgeVector;
@@ -127,7 +129,7 @@ void edgeCentrality( Graph & ref )
         vertexFlag[vd] = true;
         //vertexCent[vd] = (2 * v_centrality_map[vdBC]) / ( (g - 1)*(g - 2) );
         //setBetCentrality(BetCentrality);
-        cerr << vdBC << ": " << setw(9) << v_centrality_map[vdBC] << "  BetCen :" << vertexCent[vd] << "  " << vertexFlag[vd]<<  endl;
+        cerr << vdBC << ": " << setw(9) << v_centrality_map[vdBC] << "  BetCen :" << vertexCent[vd] <<  endl;
      }
     
     double maxEdgeCentrality = 0.0;
@@ -147,6 +149,9 @@ void edgeCentrality( Graph & ref )
 	// #endif	// DEBUG
 	EdgeDescriptor ed = BCtoGEdgeVector[ numE ];
     	edgeWeight[ ed ] = e_centrality_map[ edBC ] / maxEdgeCentrality;
+        edgeCent[ ed ] = e_centrality_map[ edBC ] / maxEdgeCentrality;
+
+        //cout << " edgeCent " << edgeCent[ ed ] << endl; 
 	// eCentralityMap.insert( pair< EdgeDescriptor, double >( ed, 
 	// e_centrality_map[ edge ]/maxEdgeCentrality ) );
     	numE++;
@@ -169,7 +174,8 @@ void minimumSpanningTree( Graph & g )
 
     BGL_FORALL_EDGES( ed, g, Graph ) {
 	   flagMap[ ed ] = false;
-       fflagMap[ ed ] = true;
+       if(fflagMap[ ed ] == false) fflagMap[ ed ] = true;
+       else fflagMap[ ed ] = false;
     }
     
 
@@ -190,6 +196,54 @@ void minimumSpanningTree( Graph & g )
     }
 
 }
+
+void divideComunity( Graph & g){
+    
+    VertexIndexMap  vertexIn    = get( vertex_index, g );
+    VertexCentMap   vertexCent  = get(vertex_mycent, g);
+    EdgeCentMap     edgeCent    = get( edge_mycent, g); 
+    double maxVertexCentrality = 0.0;
+    double maxEdgeCentrality = 0.0;
+    VertexDescriptor vdMax;
+    EdgeDescriptor   edMax;
+    VertexDescriptor vT, vS;
+    unsigned int id;
+    BGL_FORALL_VERTICES( vd, g, Graph ){
+      if( maxVertexCentrality < vertexCent[vd]){
+            maxVertexCentrality = vertexCent[vd];  
+            vdMax = vd;
+        }
+        std::cout <<" vertexCent :"<< std::setw( 7 )<< vertexCent[vd] << std::endl;
+    }
+        std::cout << " maxVertexCentrality :" << maxVertexCentrality << std::endl;
+    BGL_FORALL_EDGES( ed, g, Graph ){
+        if( maxEdgeCentrality < edgeCent[ed]){
+            maxEdgeCentrality = edgeCent[ed];
+            edMax = ed;
+            vT = target( ed, g);
+            vS = source( ed, g);
+        }
+
+      std::cerr << " edgeCent :"<< std::setw( 7 )<< edgeCent[ed] << std::endl;
+    }
+    std::cout << " maxEdgeCentrality :" << maxEdgeCentrality << std::endl;
+
+    std::cout << "vdMax : " << vdMax << endl;
+    std::cout << "vT : " << vT << endl;
+    std::cout << "vS : " << vS << endl;
+    //get comunity label
+    std::vector< int > component( num_vertices( g ) );
+    connected_components( g, 
+        make_iterator_property_map( component.begin(), get(vertex_index, g ), component[0] ) );
+    BGL_FORALL_VERTICES(vd, g, Graph){
+        int index = vertexIn[vd];
+        std::cerr << " => " << std::setw( 3 ) << index << " : " << component[ index ] << std::endl;
+    }
+    // for ( tie( vi, vi_end ) = vertices( g ); vi != vi_end; ++vi ) {
+    //     int index = vertexIn[*vi];
+    //      std::cerr << " => " << std::setw( 3 ) << index << " : " << component[ index ] << std::endl;
+    // }
+}   
 
 
 #ifdef SKIP

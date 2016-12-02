@@ -45,6 +45,7 @@ private slots:
     // analyze
     void calcEdgeCentrality( void );
     void calcMST( void );
+    void calcDivideComunity( void );
 
     // annotate
     void allSet( void );
@@ -118,6 +119,7 @@ protected:
     QMenu	*analyzeMenu;
     QAction	*actEdgeCentrality;
     QAction	*actMST;
+    QAction *actDivideComunity;
 
     // annotate
     QMenu	*annotateMenu;

@@ -184,13 +184,14 @@ void Widget::_draw( GLenum mode )           /***********************************
     	    glColor3d( 1.0, 0.0, 0.0 );
     	}
         else{
-             if( edgeFflag[ ed ] == false ){
-    	       glLineWidth( 2.0 );
-    	       glColor3d( 0.5, 0.5, 0.5);
+             if( edgeFflag[ ed ] == true ){
+                continue;
+    	       //glLineWidth( 2.0 );
+                //glColor3d( 1.0, 1.0, 1.0);
             }
-            else{
+            else{    
                 glLineWidth( 2.0 );
-                glColor3d( 1.0, 1.0, 1.0);
+               glColor3d( 0.5, 0.5, 0.5);
             }
         }   
     // else if( edgeFlag[ ed ] == false && edgeFflag[ ed ] == true ){
@@ -218,10 +219,11 @@ void Widget::_draw( GLenum mode )           /***********************************
         glLoadName( vertexID[ vd ] );
         curcoord = vertexCoord[ vd ];
 	//cout << "curcoord=" << curcoord << endl;
-      //  cout << " bet " << BetCentrality << endl;
-        if ( vertexSwitch[ vd ] ) radius = 8.0;
-        else radius = 5.0;
-
+        if( vertexFlag[ vd ]) radius = 14.0;
+        else{
+            if ( vertexSwitch[ vd ] ) radius = 8.0;
+            else radius = 5.0;
+        }   
 	if ( vertexSwitch[ vd ] ) glColor3f( 0.2, 0.2, 0.2 );
 	else glColor3f( 0.0, 0.0, 0.0 );
 	// drawing silhouettes
@@ -249,11 +251,12 @@ void Widget::_draw( GLenum mode )           /***********************************
 	    glVertex2dv( curcoord.element() );  //node position
 	    glEnd();
 	}
+    //mark centrality
+    double t = 0.0;
+    t = vertexCent[vd];
     if(vertexFlag[vd]){
-        if(vertexCent[vd] == 1) glColor3f(1.0 ,0.0 , 0.0);
-        else if(vertexCent[vd] >= 0.5) glColor3f(0.0, 0.0, 1.0);
-        else if(vertexCent[vd] == 0) glColor3f(0.0 , 1.0 , 0.0);
-        else glColor3f(0.5, 0.5, 0.5);
+        if(1 >= t && 0.5 <= t) glColor3f(2*t + 1, -2*t +2, 0.0);
+        else glColor3f(0.0, 2*t, -2 * t +1);
         glBegin( GL_POINTS );
         glVertex2dv( curcoord.element() );  //node position
         glEnd();

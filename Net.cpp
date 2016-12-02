@@ -462,9 +462,10 @@ void Net::_force( void )
                         if(edgeFlag[ ed ]== false && edgeFflag[ ed ] == false){
                             vertexForce[ vdi ] += ka * ( dist - L ) * unit;
                         }else if(edgeFlag[ ed ]== true && edgeFflag[ ed ] == true){
-                            vertexForce[ vdi ] += ka * ( dist - (L*0.3) ) * unit;
+                            vertexForce[ vdi ] += ka * ( dist - (L*0.05) ) * unit;
                         }else if(edgeFlag[ ed ]== false && edgeFflag[ ed ] == true){
-                            vertexForce[ vdi ] += ka * ( dist - (L*3) ) * unit;
+                            vertexForce[ vdi ] += ka * ( dist - (L*5) ) * unit;
+                            //vertexForce[ vdi ] += ka * ( dist - L ) * 0 * unit;
                         }
                 }
                 // Replusive force by Couloum's power
@@ -1048,6 +1049,10 @@ void Net::calcMST( void )
     minimumSpanningTree( *this );
 
    // cout << "test " << _finishFlag << endl;    
+}
+
+void Net::calcDivideComunity( void ){
+    divideComunity( *this );
 }
 
 

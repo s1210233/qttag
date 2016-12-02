@@ -60,6 +60,8 @@ enum vertex_myoverlap_t		{ vertex_myoverlap };
 // ID
 enum vertex_myid_t		{ vertex_myid };
 
+// Edge Centrality
+enum edge_mycent_t      { edge_mycent };
 // Finish Flag
 enum edge_myfflag_t     { edge_myfflag };
 // Label
@@ -89,6 +91,7 @@ namespace boost {
     BOOST_INSTALL_PROPERTY( vertex, myoverlap );
     BOOST_INSTALL_PROPERTY( vertex, myid );
     // edge properties
+    BOOST_INSTALL_PROPERTY( edge, mycent );
     BOOST_INSTALL_PROPERTY( edge, myfflag );
     BOOST_INSTALL_PROPERTY( edge, mylabel );
     BOOST_INSTALL_PROPERTY( edge, myflag );
@@ -139,16 +142,18 @@ typedef property< vertex_index_t, unsigned int, MyVID >		MyVertexProperty;
 //------------------------------------------------------------------------------
 //	Customizing edge properties
 //------------------------------------------------------------------------------
+// Edge Centrality
+typedef property< edge_mycent_t, double >                   MyECent;
 // Edge Finish Flag
-typedef property< edge_myfflag_t, bool >                MyEFflag;
+typedef property< edge_myfflag_t, bool, MyECent >           MyEFflag;
 // Edge Label
-typedef property< edge_mylabel_t, unsigned int, MyEFflag>		MyELabel;
+typedef property< edge_mylabel_t, unsigned int, MyEFflag>	MyELabel;
 // Edge Flag
-typedef property< edge_myflag_t, bool, MyELabel >		MyEFlag;
+typedef property< edge_myflag_t, bool, MyELabel >		    MyEFlag;
 // Edge ID
 typedef property< edge_myid_t, unsigned int, MyEFlag >		MyEID;
 // Edge weight
-typedef property< edge_weight_t, double, MyEID >		MyEWeight;
+typedef property< edge_weight_t, double, MyEID >		    MyEWeight;
 // Edge index
 typedef property< edge_index_t, unsigned int, MyEWeight >	MyEdgeProperty;
 
@@ -186,6 +191,7 @@ typedef property_map< Graph, vertex_myid_t >::type		VertexIDMap;
 typedef property_map< Graph, vertex_index_t >::type		VertexIndexMap;
 
 // Edge property map
+typedef property_map< Graph, edge_mycent_t >::type      EdgeCentMap;
 typedef property_map< Graph, edge_myfflag_t >::type     EdgeFflagMap;
 typedef property_map< Graph, edge_mylabel_t >::type		EdgeLabelMap;
 typedef property_map< Graph, edge_myflag_t >::type		EdgeFlagMap;
@@ -200,6 +206,7 @@ typedef property_map< Graph, edge_index_t >::type		EdgeIndexMap;
 // void edgeCentrality	( Graph & g, map< EdgeDescriptor, double > & eCentralityMap );
 void edgeCentrality	( Graph & g );
 void minimumSpanningTree( Graph & g );
+void divideComunity ( Graph & g );
 
 // double betw;
 // void setBetCentrality( double b ){double betw = b; };
