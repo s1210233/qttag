@@ -227,10 +227,12 @@ void divideComunity( Graph & g){
       std::cerr << " edgeCent :"<< std::setw( 7 )<< edgeCent[ed] << std::endl;
     }
     std::cout << " maxEdgeCentrality :" << maxEdgeCentrality << std::endl;
-
-    std::cout << "vdMax : " << vdMax << endl;
-    std::cout << "vT : " << vT << endl;
-    std::cout << "vS : " << vS << endl;
+    std::cout << "vdMax : " << vdMax << endl << "vT : " << vT << endl << "vS : " << vS << endl;
+    
+    //divide max edge centrality
+    boost::remove_edge(edMax, g);
+    // EdgeFflagMap    edgeFflag   = get( edge_myfflag, g);
+    // edgeFflag[edMax] = true;
     //get comunity label
     std::vector< int > component( num_vertices( g ) );
     connected_components( g, 
