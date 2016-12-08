@@ -42,7 +42,7 @@ void edgeCentrality( Graph & ref )
     BGL_FORALL_VERTICES( vd, ref, Graph )
     {
 	//#ifdef DEBUG
-	cerr << vertexIndex[ vd ] << " vs. " << numV << endl;
+	//cerr << vertexIndex[ vd ] << " vs. " << numV << endl;
 	//#endif	// DEBUG
 	add_vertex( gBC );
 	BCtoGVertexVector.push_back( vd );
@@ -96,7 +96,7 @@ void edgeCentrality( Graph & ref )
     std::cout << "Before" << std::endl;
  
     BGL_FORALL_EDGES(edgeBC, gBC, GraphBC) {
-	   std::cout << edgeBC << ": " << e_centrality_map[edgeBC] << std::endl;
+	   //std::cout << edgeBC << ": " << e_centrality_map[edgeBC] << std::endl;
     }
 
     // Calculate the vertex and edge centralites
@@ -107,7 +107,7 @@ void edgeCentrality( Graph & ref )
     std::cout << "\nAfter" << std::endl;
  
     BGL_FORALL_EDGES(edgeBC, gBC, GraphBC ) {
-	   std::cout << edgeBC << ": " <<e_centrality_map[edgeBC] << std::endl;
+	   //std::cout << edgeBC << ": " <<e_centrality_map[edgeBC] << std::endl;
     }
 
     //update 11/21
@@ -129,7 +129,7 @@ void edgeCentrality( Graph & ref )
         vertexFlag[vd] = true;
         //vertexCent[vd] = (2 * v_centrality_map[vdBC]) / ( (g - 1)*(g - 2) );
         //setBetCentrality(BetCentrality);
-        cerr << vdBC << ": " << setw(9) << v_centrality_map[vdBC] << "  BetCen :" << vertexCent[vd] <<  endl;
+        //cerr << vdBC << ": " << setw(9) << v_centrality_map[vdBC] << "  BetCen :" << vertexCent[vd] <<  endl;
      }
     
     double maxEdgeCentrality = 0.0;
@@ -144,8 +144,8 @@ void edgeCentrality( Graph & ref )
     BGL_FORALL_EDGES( edBC, gBC, GraphBC )
     {
 	// #ifdef DEBUG
-        cerr << edBC << ": " << e_centrality_map[ edBC ] << 
-	    "=> " << e_centrality_map[ edBC ] / maxEdgeCentrality << endl;
+    //    cerr << edBC << ": " << e_centrality_map[ edBC ] << 
+	// "=> " << e_centrality_map[ edBC ] / maxEdgeCentrality << endl;
 	// #endif	// DEBUG
 	EdgeDescriptor ed = BCtoGEdgeVector[ numE ];
     	edgeWeight[ ed ] = e_centrality_map[ edBC ] / maxEdgeCentrality;
@@ -197,16 +197,18 @@ void minimumSpanningTree( Graph & g )
 
 }
 
+    int nindex = 0;
+    int sindex = 0;
+
 void divideComunity( Graph & g){
     
-    VertexIndexMap  vertexIn    = get( vertex_index, g );
+    
     VertexCentMap   vertexCent  = get(vertex_mycent, g);
     EdgeCentMap     edgeCent    = get( edge_mycent, g); 
     double maxVertexCentrality = 0.0;
     double maxEdgeCentrality = 0.0;
-    VertexDescriptor vdMax;
     EdgeDescriptor   edMax;
-    VertexDescriptor vT, vS;
+    VertexDescriptor vdMax, vT, vS, vN;
     unsigned int id;
     BGL_FORALL_VERTICES( vd, g, Graph ){
       if( maxVertexCentrality < vertexCent[vd]){
@@ -231,21 +233,42 @@ void divideComunity( Graph & g){
     
     //divide max edge centrality
     boost::remove_edge(edMax, g);
+
+    //vN = boost::add_vertex(g);
+    //boost::add_edge(vN, vS, g);
     // EdgeFflagMap    edgeFflag   = get( edge_myfflag, g);
     // edgeFflag[edMax] = true;
     //get comunity label
+    setCommunityLabel(g);
+
+    if(nindex <= sindex) {
+        divideComunity(g);
+    }
+        sindex = nindex;
+        //edgeCentrality(g);
+    //std::cout << " vc  :"<<boost::vertex_copy(vdMax) << endl;
+ 
+    // for ( tie( vi, vi_end ) = vertices( g ); vi != vi_end; ++vi ) {
+    //     int index = vertexIn[*vi];
+    //      std::cerr << " => " << std::setw( 3 ) << index << " : " << component[ index ] << std::endl;
+    // }
+}   
+
+void setCommunityLabel( Graph & g)
+{
+    VertexIndexMap  vertexIn    = get( vertex_index, g );
+
     std::vector< int > component( num_vertices( g ) );
     connected_components( g, 
         make_iterator_property_map( component.begin(), get(vertex_index, g ), component[0] ) );
     BGL_FORALL_VERTICES(vd, g, Graph){
         int index = vertexIn[vd];
         std::cerr << " => " << std::setw( 3 ) << index << " : " << component[ index ] << std::endl;
+        if(nindex < component[ index ]){
+            nindex = component[ index ];
+        }
     }
-    // for ( tie( vi, vi_end ) = vertices( g ); vi != vi_end; ++vi ) {
-    //     int index = vertexIn[*vi];
-    //      std::cerr << " => " << std::setw( 3 ) << index << " : " << component[ index ] << std::endl;
-    // }
-}   
+}
 
 
 #ifdef SKIP

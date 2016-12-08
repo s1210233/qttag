@@ -207,6 +207,7 @@ typedef property_map< Graph, edge_index_t >::type		EdgeIndexMap;
 void edgeCentrality	( Graph & g );
 void minimumSpanningTree( Graph & g );
 void divideComunity ( Graph & g );
+void setCommunityLabel ( Graph & g );
 
 // double betw;
 // void setBetCentrality( double b ){double betw = b; };
