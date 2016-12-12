@@ -25,6 +25,8 @@ using namespace boost;
 //  Boost customization
 //------------------------------------------------------------------------------
 // Vertex attributes
+// Community Flag
+enum vertex_mycomflag_t     { vertex_comflag };
 // Finish Flag
 enum vertex_myflag_t        { vertex_myflag };
 // Betweeness Centrality
@@ -73,6 +75,7 @@ enum edge_myid_t		{ edge_myid };
 
 namespace boost {
     // vertex properties
+    BOOST_INSTALL_PROPERTY( vertex, mycomflag );
     BOOST_INSTALL_PROPERTY( vertex, myflag );
     BOOST_INSTALL_PROPERTY( vertex, mycent );
     BOOST_INSTALL_PROPERTY( vertex, mylabel );
@@ -102,8 +105,10 @@ namespace boost {
 //------------------------------------------------------------------------------
 //	Customizing vertex properties
 //------------------------------------------------------------------------------
-//Vertex Finish Flag
-typedef property< vertex_myflag_t, bool >                   MyVFlag;
+// Vertex Community Flag
+typedef property< vertex_mycomflag_t, vector<int> >         MyVComFlag;
+// Vertex Finish Flag
+typedef property< vertex_myflag_t, bool, MyVComFlag >       MyVFlag;
 // Vertex Betweeness Centrality
 typedef property< vertex_mycent_t, double, MyVFlag >        MyVCent;  
 // Vertex named ID 
@@ -171,8 +176,9 @@ typedef graph_traits< Graph >::vertex_iterator			VertexIterator;
 typedef graph_traits< Graph >::edge_iterator			EdgeIterator;
 
 // Vertex property map
-typedef property_map< Graph, vertex_myflag_t >::type       VertexFlagMap;
-typedef property_map< Graph, vertex_mycent_t >::type       VertexCentMap;
+typedef property_map< Graph, vertex_mycomflag_t >::type     VertexComFlagMap;
+typedef property_map< Graph, vertex_myflag_t >::type        VertexFlagMap;
+typedef property_map< Graph, vertex_mycent_t >::type        VertexCentMap;
 typedef property_map< Graph, vertex_mylabel_t >::type		VertexLabelMap;
 typedef property_map< Graph, vertex_myswitch_t >::type		VertexSwitchMap;
 typedef property_map< Graph, vertex_mycoord_t >::type		VertexCoordMap;
@@ -184,7 +190,7 @@ typedef property_map< Graph, vertex_myaspect_t >::type		VertexAspectMap;
 typedef property_map< Graph, vertex_myshift_t >::type		VertexShiftMap;
 typedef property_map< Graph, vertex_myforce_t >::type		VertexForceMap;
 typedef property_map< Graph, vertex_myplace_t >::type		VertexPlaceMap;
-typedef property_map< Graph, vertex_mynum_t >::type		VertexNumMap;
+typedef property_map< Graph, vertex_mynum_t >::type		       VertexNumMap;
 typedef property_map< Graph, vertex_myratio_t >::type		VertexRatioMap;
 typedef property_map< Graph, vertex_myoverlap_t >::type		VertexOverlapMap;
 typedef property_map< Graph, vertex_myid_t >::type		VertexIDMap;
@@ -208,7 +214,8 @@ void edgeCentrality	( Graph & g );
 void minimumSpanningTree( Graph & g );
 void divideComunity ( Graph & g );
 void setCommunityLabel ( Graph & g );
-
+void countCommunityLabel ( Graph & g );
+void printCommunityLabel ( VertexDescriptor );
 // double betw;
 // void setBetCentrality( double b ){double betw = b; };
     // //update 11/21

@@ -6,6 +6,7 @@
 #include <boost/graph/bc_clustering.hpp>
 #include <boost/graph/kruskal_min_spanning_tree.hpp>
 #include <boost/graph/connected_components.hpp>
+#include <vector>
 
 
 void edgeCentrality( Graph & ref )
@@ -202,7 +203,7 @@ void minimumSpanningTree( Graph & g )
 
 void divideComunity( Graph & g){
     
-    
+    Graph gN = g;
     VertexCentMap   vertexCent  = get(vertex_mycent, g);
     EdgeCentMap     edgeCent    = get( edge_mycent, g); 
     double maxVertexCentrality = 0.0;
@@ -215,7 +216,7 @@ void divideComunity( Graph & g){
             maxVertexCentrality = vertexCent[vd];  
             vdMax = vd;
         }
-        std::cout <<" vertexCent :"<< std::setw( 7 )<< vertexCent[vd] << std::endl;
+        //std::cout <<" vertexCent :"<< std::setw( 7 )<< vertexCent[vd] << std::endl;
     }
         std::cout << " maxVertexCentrality :" << maxVertexCentrality << std::endl;
     BGL_FORALL_EDGES( ed, g, Graph ){
@@ -226,7 +227,7 @@ void divideComunity( Graph & g){
             vS = source( ed, g);
         }
 
-      std::cerr << " edgeCent :"<< std::setw( 7 )<< edgeCent[ed] << std::endl;
+      //std::cerr << " edgeCent :"<< std::setw( 7 )<< edgeCent[ed] << std::endl;
     }
     std::cout << " maxEdgeCentrality :" << maxEdgeCentrality << std::endl;
     std::cout << "vdMax : " << vdMax << endl << "vT : " << vT << endl << "vS : " << vS << endl;
@@ -239,12 +240,15 @@ void divideComunity( Graph & g){
     // EdgeFflagMap    edgeFflag   = get( edge_myfflag, g);
     // edgeFflag[edMax] = true;
     //get comunity label
+    // countCommunityLabel(g);
     setCommunityLabel(g);
+    if(nindex <= sindex) divideComunity(g);
+    else sindex = nindex;     
+    
+    
+    //std::cout<< "sindex : " << sindex << " nindex : " << nindex << endl;
 
-    if(nindex <= sindex) {
-        divideComunity(g);
-    }
-        sindex = nindex;
+    
         //edgeCentrality(g);
     //std::cout << " vc  :"<<boost::vertex_copy(vdMax) << endl;
  
@@ -257,17 +261,47 @@ void divideComunity( Graph & g){
 void setCommunityLabel( Graph & g)
 {
     VertexIndexMap  vertexIn    = get( vertex_index, g );
+    VertexComFlagMap vertexCom  = get( vertex_comflag, g );
 
-    std::vector< int > component( num_vertices( g ) );
+    std::vector< int > component( num_vertices( g ));
     connected_components( g, 
         make_iterator_property_map( component.begin(), get(vertex_index, g ), component[0] ) );
     BGL_FORALL_VERTICES(vd, g, Graph){
         int index = vertexIn[vd];
-        std::cerr << " => " << std::setw( 3 ) << index << " : " << component[ index ] << std::endl;
+        vertexCom[ vd ].push_back(component[ index ]);
+        std::cerr << " => " << std::setw( 3 ) << index;
+        printCommunityLabel(vd);
+        //<< component[ index ];
         if(nindex < component[ index ]){
             nindex = component[ index ];
         }
     }
+}
+
+void countCommunityLabel( Graph & g)
+{
+    VertexIndexMap  vertexIn    = get( vertex_index, g );
+    std::vector< int > component( num_vertices( g ));
+    connected_components( g, 
+        make_iterator_property_map( component.begin(), get(vertex_index, g ), component[0] ) );
+    BGL_FORALL_VERTICES(vd, g, Graph){
+        int index = vertexIn[vd];
+        //std::cerr << " => " << std::setw( 3 ) << index;
+        if(nindex < component[ index ]){
+            nindex = component[ index ];
+        }
+    }   
+}
+
+void printCommunityLabel( VertexDescriptor vd)
+{
+    VertexComFlagMap vertexCom;
+    vector<int>::iterator it = vertexCom[ vd ].begin();
+    while(it != vertexCom[ vd ].end()){
+        std::cout << " : " << "[" << *it << "]";
+        ++it;
+    }
+    std::cout<<endl;
 }
 
 
