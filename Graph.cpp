@@ -157,7 +157,7 @@ void edgeCentrality( Graph & ref )
 	// e_centrality_map[ edge ]/maxEdgeCentrality ) );
     	numE++;
     }
-
+    setCommunityLabel(ref);
 
     return;
 }
@@ -202,8 +202,13 @@ void minimumSpanningTree( Graph & g )
     int sindex = 0;
 
 void divideComunity( Graph & g){
-    
     Graph gN = g;
+    removeEdge(g);
+    setCommunityLabel(g);
+}   
+
+void removeEdge( Graph & g )
+{
     VertexCentMap   vertexCent  = get(vertex_mycent, g);
     EdgeCentMap     edgeCent    = get( edge_mycent, g); 
     double maxVertexCentrality = 0.0;
@@ -218,7 +223,7 @@ void divideComunity( Graph & g){
         }
         //std::cout <<" vertexCent :"<< std::setw( 7 )<< vertexCent[vd] << std::endl;
     }
-        std::cout << " maxVertexCentrality :" << maxVertexCentrality << std::endl;
+        //std::cout << " maxVertexCentrality :" << maxVertexCentrality << std::endl;
     BGL_FORALL_EDGES( ed, g, Graph ){
         if( maxEdgeCentrality < edgeCent[ed]){
             maxEdgeCentrality = edgeCent[ed];
@@ -229,34 +234,18 @@ void divideComunity( Graph & g){
 
       //std::cerr << " edgeCent :"<< std::setw( 7 )<< edgeCent[ed] << std::endl;
     }
-    std::cout << " maxEdgeCentrality :" << maxEdgeCentrality << std::endl;
-    std::cout << "vdMax : " << vdMax << endl << "vT : " << vT << endl << "vS : " << vS << endl;
-    
+    //std::cout << " maxEdgeCentrality :" << maxEdgeCentrality << std::endl;
+    //std::cout << "vdMax : " << vdMax << endl << "vT : " << vT << endl << "vS : " << vS << endl;
+
     //divide max edge centrality
-    boost::remove_edge(edMax, g);
+    countCommunityLabel(g);
+    if(nindex <= sindex) {
+        boost::remove_edge(edMax, g);
+        removeEdge(g);
+    }
+    else sindex = nindex;
 
-    //vN = boost::add_vertex(g);
-    //boost::add_edge(vN, vS, g);
-    // EdgeFflagMap    edgeFflag   = get( edge_myfflag, g);
-    // edgeFflag[edMax] = true;
-    //get comunity label
-    // countCommunityLabel(g);
-    setCommunityLabel(g);
-    if(nindex <= sindex) divideComunity(g);
-    else sindex = nindex;     
-    
-    
-    //std::cout<< "sindex : " << sindex << " nindex : " << nindex << endl;
-
-    
-        //edgeCentrality(g);
-    //std::cout << " vc  :"<<boost::vertex_copy(vdMax) << endl;
- 
-    // for ( tie( vi, vi_end ) = vertices( g ); vi != vi_end; ++vi ) {
-    //     int index = vertexIn[*vi];
-    //      std::cerr << " => " << std::setw( 3 ) << index << " : " << component[ index ] << std::endl;
-    // }
-}   
+}
 
 void setCommunityLabel( Graph & g)
 {
@@ -271,10 +260,6 @@ void setCommunityLabel( Graph & g)
         vertexCom[ vd ].push_back(component[ index ]);
         std::cerr << " => " << std::setw( 3 ) << index;
         printCommunityLabel(vd);
-        //<< component[ index ];
-        if(nindex < component[ index ]){
-            nindex = component[ index ];
-        }
     }
 }
 
@@ -286,7 +271,6 @@ void countCommunityLabel( Graph & g)
         make_iterator_property_map( component.begin(), get(vertex_index, g ), component[0] ) );
     BGL_FORALL_VERTICES(vd, g, Graph){
         int index = vertexIn[vd];
-        //std::cerr << " => " << std::setw( 3 ) << index;
         if(nindex < component[ index ]){
             nindex = component[ index ];
         }

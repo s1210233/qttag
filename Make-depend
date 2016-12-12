@@ -7228,7 +7228,8 @@ Graph.o: Graph.cpp Common.h Graph.h /opt/local/include/boost/config.hpp \
   /opt/local/include/boost/range/algorithm_ext/iota.hpp \
   /opt/local/include/boost/graph/kruskal_min_spanning_tree.hpp \
   /opt/local/include/boost/pending/disjoint_sets.hpp \
-  /opt/local/include/boost/pending/detail/disjoint_sets.hpp
+  /opt/local/include/boost/pending/detail/disjoint_sets.hpp \
+  /opt/local/include/boost/graph/connected_components.hpp
 Net.o: Net.cpp /opt/local/include/boost/format.hpp \
   /opt/local/include/boost/detail/workaround.hpp \
   /opt/local/include/boost/config.hpp \

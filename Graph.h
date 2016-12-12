@@ -213,6 +213,7 @@ typedef property_map< Graph, edge_index_t >::type		EdgeIndexMap;
 void edgeCentrality	( Graph & g );
 void minimumSpanningTree( Graph & g );
 void divideComunity ( Graph & g );
+void removeEdge ( Graph & g );
 void setCommunityLabel ( Graph & g );
 void countCommunityLabel ( Graph & g );
 void printCommunityLabel ( VertexDescriptor );
