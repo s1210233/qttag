@@ -203,16 +203,18 @@ void minimumSpanningTree( Graph & g )
 
 void divideComunity( Graph & g){
     Graph gN = g;
-    removeEdge(g);
-    setCommunityLabel(g);
+    removeEdge(gN);
+    setCommunityLabel(gN);
 }   
 
 void removeEdge( Graph & g )
 {
-    VertexCentMap   vertexCent  = get(vertex_mycent, g);
+    VertexCentMap   vertexCent  = get( vertex_mycent, g);
     EdgeCentMap     edgeCent    = get( edge_mycent, g); 
+    VertexIndexMap  vertexIn    = get( vertex_index, g);
     double maxVertexCentrality = 0.0;
     double maxEdgeCentrality = 0.0;
+    bool tole = false;
     EdgeDescriptor   edMax;
     VertexDescriptor vdMax, vT, vS, vN;
     unsigned int id;
@@ -221,27 +223,33 @@ void removeEdge( Graph & g )
             maxVertexCentrality = vertexCent[vd];  
             vdMax = vd;
         }
-        //std::cout <<" vertexCent :"<< std::setw( 7 )<< vertexCent[vd] << std::endl;
     }
-        //std::cout << " maxVertexCentrality :" << maxVertexCentrality << std::endl;
+        std::cout << " maxVertexCentrality :" << maxVertexCentrality << std::endl;
     BGL_FORALL_EDGES( ed, g, Graph ){
         if( maxEdgeCentrality < edgeCent[ed]){
             maxEdgeCentrality = edgeCent[ed];
-            edMax = ed;
-            vT = target( ed, g);
-            vS = source( ed, g);
         }
-
-      //std::cerr << " edgeCent :"<< std::setw( 7 )<< edgeCent[ed] << std::endl;
     }
-    //std::cout << " maxEdgeCentrality :" << maxEdgeCentrality << std::endl;
-    //std::cout << "vdMax : " << vdMax << endl << "vT : " << vT << endl << "vS : " << vS << endl;
-
+    BGL_FORALL_EDGES( ed, g, Graph ){
+        if(maxEdgeCentrality == edgeCent[ed]){
+            edMax = ed;
+            vT = target( edMax, g);
+            vS = source( edMax, g);
+            std::cout << " maxEdgeCentrality :" << maxEdgeCentrality << std::endl;
+            std::cout << "vdMax : " << vertexIn[vdMax] << endl << "vTID : "<< vertexIn[vT] <<" vTCent : " << vertexCent[vT] << endl << " vSID : "<< vertexIn[vS] << " vSCent : " << vertexCent[vS] << endl;
+            tole = checkTolerance(vS,vT);
+            if(tole) boost::remove_edge(edMax, g);
+            else if(vdMax == vT || vdMax == vS) boost::remove_edge(edMax, g); 
+        }
+    }
+    std::cout << " maxEdgeCentrality :" << maxEdgeCentrality << std::endl;
+    std::cout << "vdMax : " << vertexIn[vdMax] << endl << "vTID : "<< vertexIn[vT] <<" vTCent : " << vertexCent[vT] << endl << " vSID : "<< vertexIn[vS] << " vSCent : " << vertexCent[vS] << endl;
+   
     //divide max edge centrality
     countCommunityLabel(g);
     if(nindex <= sindex) {
-        boost::remove_edge(edMax, g);
-        removeEdge(g);
+        //boost::remove_edge(edMax, g);
+        //removeEdge(g);
     }
     else sindex = nindex;
 
@@ -273,8 +281,8 @@ void countCommunityLabel( Graph & g)
         int index = vertexIn[vd];
         if(nindex < component[ index ]){
             nindex = component[ index ];
-        }
-    }   
+        }   
+    }
 }
 
 void printCommunityLabel( VertexDescriptor vd)
@@ -287,6 +295,28 @@ void printCommunityLabel( VertexDescriptor vd)
     }
     std::cout<<endl;
 }
+
+bool checkTolerance( VertexDescriptor vs, VertexDescriptor vt)
+{
+    VertexCentMap vertexCent;
+    double tole1 = vertexCent[vs]*0.9;
+    double tole2 = vertexCent[vs]*1.1;
+    if(tole1 <= vertexCent[vt] && tole2 >= vertexCent[vs])  return true;
+    else return false;
+}
+
+// void printCommunityLabel2( Graph & g )
+// {
+//     VertexComFlagMap vertexCom = get( vertex_comflag, g );
+//     BGL_FORALL_VERTICES(vd, g, Graph){
+//         std::vector<int>::iterator it = vertexCom[ vd ].begin();
+//         while(it != vertexCom[ vd ].end()){
+//         std::cout << " : " << "[" << *it << "]";
+//         ++it;
+//         }
+//     std::cout<<endl;
+//     }
+// }
 
 
 #ifdef SKIP

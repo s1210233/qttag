@@ -90,6 +90,8 @@ class Net : public Graph {
 
     int			_width;
     int			_height;
+    
+
 
     // center coordinates
     double		_center_x, _center_y;
@@ -148,7 +150,8 @@ class Net : public Graph {
 
 
   public:
-
+    // static int         _nindex;
+    // static int         _sindex;
 //------------------------------------------------------------------------------
 //	コンストラクタ
 //	Constructors

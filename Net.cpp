@@ -129,6 +129,9 @@ void Net::_init( void )
     _gp = false;
     _smoothingset = false;
     _spaceBit	= false;
+
+    // _nindex = 0;
+    // _sindex = 0;
     
 }
 
@@ -1047,8 +1050,6 @@ void Net::calcEdgeCentrality( void )
 void Net::calcMST( void )
 {
     minimumSpanningTree( *this );
-
-   // cout << "test " << _finishFlag << endl;    
 }
 
 void Net::calcDivideComunity( void ){

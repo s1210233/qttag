@@ -217,6 +217,8 @@ void removeEdge ( Graph & g );
 void setCommunityLabel ( Graph & g );
 void countCommunityLabel ( Graph & g );
 void printCommunityLabel ( VertexDescriptor );
+bool checkTolerance ( VertexDescriptor, VertexDescriptor );
+// void printCommunityLabel2 ( Graph & g );
 // double betw;
 // void setBetCentrality( double b ){double betw = b; };
     // //update 11/21
