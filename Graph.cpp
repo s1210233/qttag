@@ -6,6 +6,7 @@
 #include <boost/graph/bc_clustering.hpp>
 #include <boost/graph/kruskal_min_spanning_tree.hpp>
 #include <boost/graph/connected_components.hpp>
+#include <boost/range/algorithm.hpp>
 #include <vector>
 
 
@@ -157,7 +158,7 @@ void edgeCentrality( Graph & ref )
 	// e_centrality_map[ edge ]/maxEdgeCentrality ) );
     	numE++;
     }
-    setCommunityLabel(ref);
+    //setCommunityLabel(ref);
 
     return;
 }
@@ -198,13 +199,13 @@ void minimumSpanningTree( Graph & g )
 
 }
 
-    int nindex = 0;
-    int sindex = 0;
-
 void divideComunity( Graph & g){
     Graph gN = g;
+    vector<VertexDescriptor> v;
+    setCommunityLabel( v, g);
+    v = searchConnect(g);
     removeEdge(gN);
-    setCommunityLabel(gN);
+    setCommunityLabel( v, gN);
 }   
 
 void removeEdge( Graph & g )
@@ -224,7 +225,8 @@ void removeEdge( Graph & g )
             vdMax = vd;
         }
     }
-        std::cout << " maxVertexCentrality :" << maxVertexCentrality << std::endl;
+    //searchConnect(vdMax,g);
+    std::cout << " maxVertexCentrality :" << maxVertexCentrality << std::endl;
     BGL_FORALL_EDGES( ed, g, Graph ){
         if( maxEdgeCentrality < edgeCent[ed]){
             maxEdgeCentrality = edgeCent[ed];
@@ -235,31 +237,60 @@ void removeEdge( Graph & g )
             edMax = ed;
             vT = target( edMax, g);
             vS = source( edMax, g);
-            std::cout << " maxEdgeCentrality :" << maxEdgeCentrality << std::endl;
-            std::cout << "vdMax : " << vertexIn[vdMax] << endl << "vTID : "<< vertexIn[vT] <<" vTCent : " << vertexCent[vT] << endl << " vSID : "<< vertexIn[vS] << " vSCent : " << vertexCent[vS] << endl;
+            //std::cout << " maxEdgeCentrality :" << maxEdgeCentrality << std::endl;
+            //std::cout << "vdMax : " << vertexIn[vdMax] << endl << "vTID : "<< vertexIn[vT] <<" vTCent : " << vertexCent[vT] << endl << " vSID : "<< vertexIn[vS] << " vSCent : " << vertexCent[vS] << endl;
             tole = checkTolerance(vS,vT);
             if(tole) boost::remove_edge(edMax, g);
             else if(vdMax == vT || vdMax == vS) boost::remove_edge(edMax, g); 
         }
     }
-    std::cout << " maxEdgeCentrality :" << maxEdgeCentrality << std::endl;
-    std::cout << "vdMax : " << vertexIn[vdMax] << endl << "vTID : "<< vertexIn[vT] <<" vTCent : " << vertexCent[vT] << endl << " vSID : "<< vertexIn[vS] << " vSCent : " << vertexCent[vS] << endl;
+    // searchConnect(vdMax,g);
+    //std::cout << " maxEdgeCentrality :" << maxEdgeCentrality << std::endl;
+    //std::cout << "vdMax : " << vdMax << endl << "vTID : "<< vertexIn[vT] <<" vTCent : " << vertexCent[vT] << endl << " vSID : "<< vertexIn[vS] << " vSCent : " << vertexCent[vS] << endl;
    
     //divide max edge centrality
-    countCommunityLabel(g);
-    if(nindex <= sindex) {
-        //boost::remove_edge(edMax, g);
-        //removeEdge(g);
-    }
-    else sindex = nindex;
-
+    //countCommunityLabel(g);
 }
 
-void setCommunityLabel( Graph & g)
+vector<VertexDescriptor>  searchConnect ( Graph & g )
 {
-    VertexIndexMap  vertexIn    = get( vertex_index, g );
-    VertexComFlagMap vertexCom  = get( vertex_comflag, g );
+    VertexDescriptor vS, vT,vdMax;
+    VertexComFlagMap vc = get( vertex_comflag, g);
+    VertexIndexMap vI = get(vertex_index, g);
+    double maxv;
+    VertexCentMap vce = get( vertex_mycent, g);
+    vector<VertexDescriptor> v;
+    BGL_FORALL_VERTICES( vd, g, Graph ){
+      if( maxv < vce[vd]){
+            maxv = vce[vd];  
+            vdMax = vd;
+        }
+    }
+    BGL_FORALL_EDGES( ed, g, Graph ){
+        vT = target( ed, g);
+        vS = source( ed, g);
+        if( vdMax == vT ) v.push_back( vS );
+        else if(vdMax == vS) v.push_back( vT );
+    }
+    vector<VertexDescriptor>::iterator it = v.begin();
+    while(it != v.end()){
+        std::cout << " " << "[" << vI[*it] << "]";
+        printCommunityLabel(*it); 
+        ++it;
+    }
+    std::cout<<endl;
+    return v;
 
+} 
+
+void setCommunityLabel( vector<VertexDescriptor> v, Graph & g)
+{
+    boost::graph_traits<Graph>::in_edge_iterator ei, edge_end;
+    VertexIndexMap  vertexIn    = get( vertex_index, g );
+    EdgeIndexMap    edgeIn      = get( edge_index, g );
+    VertexComFlagMap vertexCom  = get( vertex_comflag, g );
+    int find;
+    VertexDescriptor vF;
     std::vector< int > component( num_vertices( g ));
     connected_components( g, 
         make_iterator_property_map( component.begin(), get(vertex_index, g ), component[0] ) );
@@ -267,30 +298,52 @@ void setCommunityLabel( Graph & g)
         int index = vertexIn[vd];
         vertexCom[ vd ].push_back(component[ index ]);
         std::cerr << " => " << std::setw( 3 ) << index;
+        // for (boost::tie(ei,edge_end) = boost::in_edges(vd, g); ei != edge_end; ++ei){
+        //     std::cout <<vertexIn[boost::source(*ei, g)] << "  ";
+        // }
+
+        if(boost::count(component, component[ index ]) == 1) {
+            find = component[ index ];
+            vF = vd;
+            vertexCom[vd].pop_back();
+            //std::cout << boost::in_edges(vF,g) <<" "<< endl;
+            vector<VertexDescriptor>::iterator it = v.begin();
+            while(it != v.end()){
+                int i = vertexIn[ *it ];
+                //std::cout << vertexCom[*it] << endl;
+                vertexCom[vd].push_back(component[i]);
+                ++it;
+            }
+            // vertexCom[vd].push_back(component[ index ] - 1);
+            // vertexCom[vd].push_back(component[ index ] + 1);
+        }   
+        //vertexCom[vF].pop_back();
         printCommunityLabel(vd);
-    }
+    } 
+         
+    //std::cout << " found " << find << " id " << vertexIn[ vF ] << endl;
 }
 
-void countCommunityLabel( Graph & g)
-{
-    VertexIndexMap  vertexIn    = get( vertex_index, g );
-    std::vector< int > component( num_vertices( g ));
-    connected_components( g, 
-        make_iterator_property_map( component.begin(), get(vertex_index, g ), component[0] ) );
-    BGL_FORALL_VERTICES(vd, g, Graph){
-        int index = vertexIn[vd];
-        if(nindex < component[ index ]){
-            nindex = component[ index ];
-        }   
-    }
-}
+// void countCommunityLabel( Graph & g)
+// {
+//     VertexIndexMap  vertexIn    = get( vertex_index, g );
+//     std::vector< int > component( num_vertices( g ));
+//     connected_components( g, 
+//         make_iterator_property_map( component.begin(), get(vertex_index, g ), component[0] ) );
+//     BGL_FORALL_VERTICES(vd, g, Graph){
+//         int index = vertexIn[vd];
+//         if(nindex < component[ index ]){
+//             nindex = component[ index ];
+//         }   
+//     }
+// }
 
 void printCommunityLabel( VertexDescriptor vd)
 {
     VertexComFlagMap vertexCom;
     vector<int>::iterator it = vertexCom[ vd ].begin();
     while(it != vertexCom[ vd ].end()){
-        std::cout << " : " << "[" << *it << "]";
+        std::cout << " " << "[" << *it << "]";
         ++it;
     }
     std::cout<<endl;
