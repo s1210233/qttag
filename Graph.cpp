@@ -291,6 +291,7 @@ void setCommunityLabel( vector<VertexDescriptor> v, Graph & g)
     VertexComFlagMap vertexCom  = get( vertex_comflag, g );
     int find;
     VertexDescriptor vF;
+
     std::vector< int > component( num_vertices( g ));
     connected_components( g, 
         make_iterator_property_map( component.begin(), get(vertex_index, g ), component[0] ) );
@@ -298,29 +299,28 @@ void setCommunityLabel( vector<VertexDescriptor> v, Graph & g)
         int index = vertexIn[vd];
         vertexCom[ vd ].push_back(component[ index ]);
         std::cerr << " => " << std::setw( 3 ) << index;
-        // for (boost::tie(ei,edge_end) = boost::in_edges(vd, g); ei != edge_end; ++ei){
-        //     std::cout <<vertexIn[boost::source(*ei, g)] << "  ";
-        // }
 
         if(boost::count(component, component[ index ]) == 1) {
-            find = component[ index ];
+            int isolate = component[ index ];
+            // std::cout << " isolate " << isolate;
             vF = vd;
             vertexCom[vd].pop_back();
-            //std::cout << boost::in_edges(vF,g) <<" "<< endl;
             vector<VertexDescriptor>::iterator it = v.begin();
             while(it != v.end()){
                 int i = vertexIn[ *it ];
-                //std::cout << vertexCom[*it] << endl;
+                // if( component[i] > isolate ) {
+                //    // std::cout << " com[i] " << component[i];
+                //     vertexCom[vd].push_back(component[i] - 1);
+                // }
                 vertexCom[vd].push_back(component[i]);
                 ++it;
             }
-            // vertexCom[vd].push_back(component[ index ] - 1);
-            // vertexCom[vd].push_back(component[ index ] + 1);
         }   
-        //vertexCom[vF].pop_back();
+        std::sort(vertexCom[vd].begin(), vertexCom[vd].end());
+        vertexCom[vd].erase(std::unique(vertexCom[vd].begin(), vertexCom[vd].end()), vertexCom[vd].end() );
+
         printCommunityLabel(vd);
-    } 
-         
+    }       
     //std::cout << " found " << find << " id " << vertexIn[ vF ] << endl;
 }
 
